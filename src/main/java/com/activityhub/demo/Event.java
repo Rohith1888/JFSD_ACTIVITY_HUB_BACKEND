@@ -20,8 +20,25 @@ public class Event {
     private String eventDate; // Format: YYYY-MM-DD
     private String eventTime; // Format: HH:mm
     private String eventVenue;
+    private int points;
+    private int penalty;
+    public int getPoints() {
+		return points;
+	}
 
-    private Integer clubId; // Store club ID as Integer
+	public void setPoints(int points) {
+		this.points = points;
+	}
+
+	public int getPenalty() {
+		return penalty;
+	}
+
+	public void setPenalty(int penalty) {
+		this.penalty = penalty;
+	}
+
+	private Integer clubId; // Store club ID as Integer
     private String organizerEmail; // Store student email as String
     
     @Lob
