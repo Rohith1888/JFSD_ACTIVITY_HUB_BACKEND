@@ -48,6 +48,7 @@ public class RegistrationController {
         registration.setFullName(student.getFullName());
         registration.setEventId(eventId);
         registration.setRegistrationTime(LocalDateTime.now());
+        registration.setIdNumber(student.getIdNumber());
 
         registrationRepository.save(registration);
         Event event = eventRepository.findById(eventId).orElse(null);
@@ -101,5 +102,10 @@ public class RegistrationController {
     @GetMapping("/{studentEmail}")
     public List<Registration> getRegisteredEvents(@PathVariable String studentEmail) {
         return registrationRepository.findByStudentEmail(studentEmail);
+    }
+    
+    @GetMapping("/events/{eventId}/students")
+    public List<Registration> getStudentsByEventId(@PathVariable Integer eventId) {
+        return registrationRepository.findByEventId(eventId);
     }
 }

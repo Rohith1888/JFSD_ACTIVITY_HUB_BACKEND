@@ -13,9 +13,18 @@ public class Registration {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String studentEmail;
-    private String fullName;
+    public String getIdNumber() {
+		return idNumber;
+	}
+
+	public void setIdNumber(String idNumber) {
+		this.idNumber = idNumber;
+	}
+
+	private String fullName;
     private Integer eventId;
     private LocalDateTime registrationTime;
+    private String idNumber;
 
     // Getters and setters
     public Long getId() {

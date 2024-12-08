@@ -21,7 +21,7 @@ public class EventDAO {
 
     // Get an event by ID
     public Event getEventById(int id) {
-        return eventRepository.findById(id).orElse(null);
+        return eventRepository.findById(id);
     }
 
     // Get all events

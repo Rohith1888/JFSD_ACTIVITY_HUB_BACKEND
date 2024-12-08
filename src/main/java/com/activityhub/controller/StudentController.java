@@ -2,9 +2,11 @@ package com.activityhub.controller;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Base64;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +22,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.activityhub.dao.EventDAO;
 import com.activityhub.dao.StudentDAO;
+import com.activityhub.demo.AttendanceRequest;
 import com.activityhub.demo.Club;
 import com.activityhub.demo.ClubInterface;
 import com.activityhub.demo.Event;
@@ -42,6 +46,9 @@ public class StudentController {
 	
 	@Autowired
 	JavaMailSender jm;
+	
+	@Autowired
+	EventDAO eventRepository;
 	
 	@PostMapping("/signup")
 	public String signUp(@RequestBody Student student) {
@@ -320,6 +327,61 @@ public class StudentController {
 		        return studentDao.getOrganizingEvents(email);
 		    }
 
+		    
+		    @GetMapping("/{email}")
+		    public Student findStudentByEmail(@PathVariable String email)
+		    {
+		    	return studentDao.findByEmailStudent(email);
+		    }
+		    
+		    @PostMapping("/{eventId}/markAttendance")
+		    public String markAttendance(@PathVariable int eventId, @RequestBody AttendanceRequest attendanceRequest) {
+		        // Fetch event by eventId
+		        Event event = eventRepository.getEventById(eventId);
+		        if (event == null) {
+		            return "Event not found";
+		        }
+
+		        // Get the list of students who attended and who didn't attend
+		        List<String> attendedEmails = attendanceRequest.getAttendedEmails();
+		        List<String> nonAttendedEmails = attendanceRequest.getNotAttendedEmails();
+
+		        if (attendedEmails == null) attendedEmails = new ArrayList<>();
+		        if (nonAttendedEmails == null) nonAttendedEmails = new ArrayList<>();
+
+		        // Debugging logs
+		        System.out.println("Attended Emails: " + attendedEmails);
+		        System.out.println("Non-attended Emails: " + nonAttendedEmails);
+
+		        // Fetch all students or filter based on event registration (if necessary)
+		        List<Student> students = studentDao.getAllStudents();
+		        for (Student student : students) {
+		            String studentEmail = student.getEmail().trim(); // Ensure no extra spaces
+
+		            // Add points for attended students
+		            if (attendedEmails.stream().anyMatch(email -> email.trim().equalsIgnoreCase(studentEmail))) {
+		                student.setPoints(student.getPoints() + event.getPoints());
+		                System.out.println("Points added to: " + student.getFullName() + ", Points: " + student.getPoints());
+		            } 
+		            // Deduct penalty for non-attended students
+		            else if (nonAttendedEmails.stream().anyMatch(email -> email.trim().equalsIgnoreCase(studentEmail))) {
+		                student.setPoints(student.getPoints() - event.getPenalty());
+		                System.out.println("Penalty deducted from: " + student.getFullName() + ", Points: " + student.getPoints());
+		            }
+		            studentDao.updateStudent(student); // Save updated student points
+		        }
+
+		        return "Attendance marked successfully!";
+		    }
+		    
+		    @GetMapping("/getPoints/{email}")
+		    public int getPoints(@PathVariable String email)
+		    {
+		    	int points = studentDao.findByEmailStudent(email).getPoints();
+		    	return points;
+		    }
+
+		    
 	 
 
 }
