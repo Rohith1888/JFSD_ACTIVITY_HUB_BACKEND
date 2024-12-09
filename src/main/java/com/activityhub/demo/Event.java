@@ -22,6 +22,7 @@ public class Event {
     private String eventVenue;
     private int points;
     private int penalty;
+    private String category;
     public int getPoints() {
 		return points;
 	}
@@ -70,6 +71,13 @@ public class Event {
     }
 
     public void setEventDescription(String eventDescription) {
+        this.eventDescription = eventDescription;
+    }
+    public String getCategory() {
+        return eventDescription;
+    }
+
+    public void setCategory(String eventDescription) {
         this.eventDescription = eventDescription;
     }
 
