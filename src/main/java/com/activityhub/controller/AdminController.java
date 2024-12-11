@@ -83,24 +83,38 @@ public class AdminController {
 	        }
 	 }
 	 
-		@PostMapping("/login")
-		public Object login(@RequestBody Map<String, String> credentials) {
-		    String email = credentials.get("email");
-		    String password = credentials.get("password");
+	 @PostMapping("/login")
+	 public Object login(@RequestBody Map<String, String> credentials) {
+	     String identifier = credentials.get("email"); // Can be email or ID number
+	     String password = credentials.get("password");
 
-		    Student st = studentDao.findByEmail(email);
-		    Admin at = adminDao.findByEmail(email);
-		    System.out.println("admin : "+at);
+	     // Determine if the identifier is an email (contains '@') or an ID number
+	     Student st = null;
+	     Admin at = null;
 
-		    if (st != null && st.getPassword().equals(password)) {
-		    	System.out.println("student");
-		        return st;
-		    } else if (at != null && at.getPassword().equals(password)) {
-		        return at;
-		    } else {
-		        return null; 
-		    }
-		}
+	     if (identifier.contains("@")) {
+	         // Assume it's an email
+	         st = studentDao.findByEmail(identifier);
+	         
+	     } else {
+	         // Assume it's an ID number
+	    	 at = adminDao.findByEmail(identifier);
+	         st = studentDao.findByIdNumber(identifier);
+	     }
+
+	     // Check credentials
+	     if (st != null && st.getPassword().equals(password)) {
+	         System.out.println("Student logged in");
+	         return st;
+	     } else if (at != null && at.getPassword().equals(password)) {
+	         System.out.println("Admin logged in");
+	         return at;
+	     } else {
+	         System.out.println("Invalid credentials");
+	         return null; // Or you could return an appropriate HTTP response
+	     }
+	 }
+
 		
 
 		    // Endpoint to fetch details of a specific club

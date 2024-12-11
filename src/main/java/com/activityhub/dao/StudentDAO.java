@@ -51,6 +51,11 @@ public class StudentDAO {
 		        return studentRepository.findByEmail(email);
 		 }
 		 
+		 public Student findByIdNumber(String id)
+		 {
+			 return studentRepository.findByIdNumber(id);
+		 }
+		 
 		 public void deleteStudent(String email)
 		 {
 			 studentRepository.delete(studentRepository.findByEmail(email));

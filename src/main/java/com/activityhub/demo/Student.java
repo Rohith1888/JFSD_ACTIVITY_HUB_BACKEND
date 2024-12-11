@@ -1,5 +1,6 @@
 package com.activityhub.demo;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Lob;
@@ -11,6 +12,7 @@ public class Student {
     @Id
     private String email;
     private String fullName;
+    @Column(unique = true)
     private String idNumber;
     private String password;
     private String role = "student";

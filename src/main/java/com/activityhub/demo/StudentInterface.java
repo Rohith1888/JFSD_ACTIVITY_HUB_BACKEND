@@ -9,6 +9,7 @@ import org.springframework.data.repository.query.Param;
 public interface StudentInterface extends JpaRepository<Student, String> {
     // Find a student by email
     Student findByEmail(String email);
+    Student findByIdNumber(String idNumber);
 
     // Find all students by clubId
     @Query("SELECT s FROM Student s WHERE s.club_id = :clubId")
