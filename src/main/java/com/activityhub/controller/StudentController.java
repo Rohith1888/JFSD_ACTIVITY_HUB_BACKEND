@@ -30,6 +30,7 @@ import com.activityhub.demo.ClubInterface;
 import com.activityhub.demo.Event;
 import com.activityhub.demo.Student;
 
+import jakarta.activation.FileDataSource;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 
@@ -60,8 +61,21 @@ public class StudentController {
 	    student.setProfileImage(defaultImageBase64);
 	   
 		String toemail=student.getEmail();
-		String subject = "Welcome to Activity Hub";
-	    String text = "You have succssfull registered your account in Activity Hub";
+		String subject = "Welcome to Activity Hub 🎉";
+
+		String text = "<html><body>"
+		             + "<h2>Welcome to Activity Hub!</h2>"
+		             + "<p>Congratulations! You have successfully registered your account in Activity Hub.</p>"
+		             + "<p>We're excited to have you as part of our community. Get ready to explore events, join clubs, and engage in activities that interest you.</p>"
+		             + "<p>To get started, please log in to your account using the link below:</p>"
+		             + "<p><a href='https://activityhubklu.netlify.app/signin'>Login to Activity Hub</a></p>"
+		             + "<p>If you have any questions, feel free to reach out to our support team.</p>"
+		             + "<br><br>"
+		             + "<img src='cid:logo' alt='Activity Hub Logo' width='250' height='50'/>"
+		             + "<br><br>"
+		             + "<p>Thank you for joining us,<br>The Activity Hub Team</p>"
+		             + "</body></html>";
+
 	    try {
             sendEmail(student.getEmail(), subject, text);
         } catch (MessagingException e) {
@@ -102,13 +116,14 @@ public class StudentController {
         MimeMessageHelper helper = new MimeMessageHelper(message, true);
         
         // Sender's email address
-        String fromEmail = "acivityhubmailservice@gmail.com";
+        String fromEmail = "activityhubjfsdklu@gmail.com";
         
         helper.setFrom(fromEmail);
         helper.setTo(toEmail);
         helper.setSubject(subject);
-        helper.setText(text);
-        
+        helper.setText(text, true);
+        FileDataSource fds = new FileDataSource("./src/main/resources/static/logo_header.png");  // Image path
+        helper.addInline("logo", fds);
         jm.send(message);
     }
     private String generateOTP() {
@@ -128,19 +143,31 @@ public class StudentController {
     	}
     	String otp = generateOTP();
     	otpMap.put(email, otp);
-    	System.out.println(otpMap);
-    	String toEmail = email;
-    	String subject = "Your OTP for registration";
-    	String text = "Your OTP : "+otp;	
-    	try {
-			sendEmail(toEmail, subject, text);
-			return "OTP Sent successfully";
-		} catch (MessagingException e) {
-			// TODO: handle exception
-			return "Error while sending mail"+e.getMessage();
-		}
-    }
+    	 System.out.println("OTP Map: " + otpMap);
 
+         // Send email with OTP
+         String toEmail = email;
+         String subject = "Your OTP for registration to Activity Hub 😊";
+         String text = "<html><body>"
+                     + "<h2>Your OTP from Activity Hub</h2>"
+                     + "<p>Your OTP: <strong>" + otp + "</strong></p>"
+                     + "<p>This OTP is provided by Activity Hub to authenticate your access or verify your account. " +
+                       "Please use this One-Time Password within the time provided on the website to complete your action. " +
+                       "Do not share this OTP with anyone for security reasons.</p>"
+                     + "<p>If you did not request this OTP, please ignore this email or contact our support team immediately.</p>"
+                     + "<br><br>"
+                     + "<img src='cid:logo' alt='Activity Hub Logo' width='250' height='50'/>"
+                     + "<br><br>"
+                     + "<p>Thank you,<br>The Activity Hub Team</p>"
+                     + "</body></html>";
+
+         try {
+             sendEmail(toEmail, subject, text);
+             return "OTP Sent successfully";
+         } catch (MessagingException e) {
+             return "Error while sending mail: " + e.getMessage();
+         }
+     }
     @PostMapping("/verifyOtp")
     public String verifyOtp(@RequestBody OTPHandler otpHandler) {
         // Check if the email exists in the map
@@ -175,7 +202,19 @@ public class StudentController {
     	System.out.println(otpMap);
     	String toEmail = email;
     	String subject = "Your OTP for password reset";
-    	String text = "Your OTP : "+otp;	
+
+    	String text = "<html><body>"
+    	             + "<h2>Password Reset OTP from Activity Hub</h2>"
+    	             + "<p>You requested a password reset for your Activity Hub account. Please use the OTP below to proceed with resetting your password:</p>"
+    	             + "<p>Your OTP: <strong>" + otp + "</strong></p>"
+    	             + "<p>This OTP is valid for a limited time. Please use it as soon as possible to reset your password.</p>"
+    	             + "<p>If you did not request a password reset, please ignore this email or contact our support team immediately.</p>"
+    	             + "<br><br>"
+    	             + "<img src='cid:logo' alt='Activity Hub Logo' width='250' height='50'/>"  // Adjust the image dimensions as needed
+    	             + "<br><br>"
+    	             + "<p>Thank you,<br>The Activity Hub Team</p>"
+    	             + "</body></html>";
+
     	try {
 			sendEmail(toEmail, subject, text);
 			return "OTP Sent successfully";
@@ -379,6 +418,43 @@ public class StudentController {
 		    {
 		    	int points = studentDao.findByEmailStudent(email).getPoints();
 		    	return points;
+		    }
+
+		    
+		    @PostMapping("/sendContactMessage")
+		    public String sendContactMessage(@RequestBody Map<String, String> contactDetails)
+		    {
+		        String name = contactDetails.get("name");
+		        String email = contactDetails.get("email");
+		        String message = contactDetails.get("message");
+
+		        // Check if email is valid or exists
+		        if (email == null || email.isEmpty()) {
+		            return "Invalid email address.";
+		        }
+
+		        // Here you can also check if the message is too short or if other fields are valid
+
+		        String subject = "Thank you for contacting Activity Hub!";
+		        String text = "<html><body>"
+		                     + "<h2>Contact Message Acknowledgment from Activity Hub</h2>"
+		                     + "<p>Dear " + name + ",</p>"
+		                     + "<p>Thank you for reaching out to Activity Hub. We have received your message:</p>"
+		                     + "<p><strong>Message:</strong><br>" + message + "</p>"
+		                     + "<p>Our team will review your inquiry and get back to you as soon as possible.</p>"
+		                     + "<p>If you have any urgent concerns, feel free to contact us directly at our support email.</p>"
+		                     + "<br><br>"
+		                     +"<img src='cid:logo' alt='Activity Hub Logo' width='250' height='50'/>\""
+		                     + "<p>Thank you for contacting us,<br>The Activity Hub Team</p>"
+		                     + "</body></html>";
+
+		        try {
+		            sendEmail(email, subject, text);
+		            return "Your message has been sent successfully.";
+		        } catch (MessagingException e) {
+		            // Handle exception
+		            return "Error while sending confirmation email: " + e.getMessage();
+		        }
 		    }
 
 		    
