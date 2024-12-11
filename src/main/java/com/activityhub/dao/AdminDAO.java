@@ -24,6 +24,11 @@ public class AdminDAO {
 	{
 		return adminRepo.findByEmail(email);
 	}
+	
+	public Admin findByFullNam(String name)
+	{
+		return adminRepo.findByFullName(name);
+	}
 
 	 public Admin findUser(String email)
 		{

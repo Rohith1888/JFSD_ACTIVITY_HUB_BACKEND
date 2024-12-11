@@ -1,5 +1,6 @@
 package com.activityhub.demo;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 
@@ -7,6 +8,7 @@ import jakarta.persistence.Id;
 public class Admin  {
     @Id
     private String email;
+    @Column(unique = true)
     private String fullName;
     private String password;
     private String role = "admin"; // Default role set to "admin"

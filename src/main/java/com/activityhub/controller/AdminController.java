@@ -95,10 +95,11 @@ public class AdminController {
 	     if (identifier.contains("@")) {
 	         // Assume it's an email
 	         st = studentDao.findByEmail(identifier);
+	         at = adminDao.findByEmail(identifier);
 	         
 	     } else {
 	         // Assume it's an ID number
-	    	 at = adminDao.findByEmail(identifier);
+	    	 at = adminDao.findByFullNam(identifier);
 	         st = studentDao.findByIdNumber(identifier);
 	     }
 
